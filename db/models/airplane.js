@@ -14,19 +14,43 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Airplane.init({
-    airlineCode: DataTypes.INTEGER,
-    flightNumber: DataTypes.INTEGER,
+    airlineCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        //max & min = 2
+        len: [2,2],
+        //all uppercase
+        isUppercase: true,
+      }
+    },
+    flightNumber:{
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1,4],
+        isNumeric: true
+      }
+
+    },
     inService: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
       allowNull: false
     },
-    maxNumPassengers: DataTypes.INTEGER,
+    maxNumPassengers: {
+      type:DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 2,
+        max: 853
+      }
+    },
     currentNumPassengers: {
       type: DataTypes.INTEGER,
       validate: {
         lessThanMax(num){
-          if(num > maxNumPassengers) {
+          if(num > this.maxNumPassengers || num < 0 ) {
             throw new Error()
           }
         },
@@ -37,10 +61,17 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    firstFlightDate: DataTypes.DATE
+    firstFlightDate: {
+      type:DataTypes.DATE,
+      validate: {
+        isAfter: '2019-12-31',
+        isBefore: '2022-01-01'
+      }
+    }
   }, {
     sequelize,
     modelName: 'Airplane',
   });
+
   return Airplane;
 };

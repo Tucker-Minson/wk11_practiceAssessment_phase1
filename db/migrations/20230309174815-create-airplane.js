@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Airplanes', {
@@ -9,10 +10,12 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       airlineCode: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       flightNumber: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
+        allowNull: false
       },
       inService: {
         defaultValue: true,
@@ -20,7 +23,8 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       maxNumPassengers: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       currentNumPassengers: {
         type: Sequelize.INTEGER
@@ -30,15 +34,21 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
+    await queryInterface.addIndex('Airplanes', ['airlineCode', 'flightNumber'], {
+      unique: true
+    })
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Airplanes');
+    await queryInterface.removeIndex('Airplanes', ['airlineCode', 'flightNumber'])
   }
 };
